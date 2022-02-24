@@ -1,5 +1,10 @@
-import { FC, useState } from "react";
+import { FC, useState, useContext } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+
+import Input from "../components/Utils/Input";
+import useHttp from "../hooks/useHttp";
+import authContext from "../contexts/authContext";
+import Spinner from "../components/Utils/Spinner";
 
 enum AuthModes {
   login,
@@ -8,6 +13,9 @@ enum AuthModes {
 
 const AuthPage: FC = () => {
   const [authMode, setAuthMode] = useState(AuthModes.signup);
+  const { isLoading, error, sendRequest } = useHttp();
+  const { login } = useContext(authContext);
+
   const {
     register,
     handleSubmit,
@@ -21,8 +29,32 @@ const AuthPage: FC = () => {
     );
   };
 
-  const onSubmit = (data: FieldValues) => {
-    console.log(data);
+  const authenticate = async (formData: FieldValues): Promise<any> => {
+    const url = `http://localhost:8000/auth/${
+      authMode === AuthModes.login ? "login" : "signup"
+    }`;
+
+    const response: Response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message);
+    }
+
+    return responseData;
+  };
+
+  const onSubmit = (formData: FieldValues) => {
+    sendRequest(authenticate, formData, (responseData: any) => {
+      login(responseData.token, responseData.user);
+    });
   };
 
   return (
@@ -33,131 +65,92 @@ const AuthPage: FC = () => {
       <div className="flex justify-center mt-10">
         <div className="w-full max-w-sm">
           <form
-            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-9"
+            className="dark:bg-slate-700 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-9"
             onSubmit={handleSubmit(onSubmit)}
           >
             {authMode === AuthModes.signup && (
-              <div className="mb-3">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  className={`w-full rounded ${
-                    errors.username &&
-                    "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  }`}
-                  {...register("username", {
-                    required: {
-                      value: authMode === AuthModes.signup,
-                      message: "Username is Required",
-                    },
-                    minLength: {
-                      value: 3,
-                      message: "Username must be at least 3 characters",
-                    },
-                  })}
-                />
-                {errors.username && (
-                  <p className="text-red-500 text-xs italic">
-                    {errors.username.message}
-                  </p>
-                )}
-              </div>
-            )}
-            <div className="mb-3">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                className={`w-full rounded ${
-                  errors.email &&
-                  "border-red-500 focus:border-red-500 focus:ring-red-500"
-                }`}
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: RegExp(
-                      "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$"
-                    ),
-                    message: "Invalid email address",
+              <Input
+                label="Username"
+                type="text"
+                register={register("username", {
+                  required: {
+                    value: authMode === AuthModes.signup,
+                    message: "Username is Required",
                   },
-                })}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div className="mb-3">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                className={`w-full rounded foucs:outline-none ${
-                  errors.password &&
-                  "border-red-500 focus:border-red-500 focus:ring-red-500"
-                }`}
-                {...register("password", {
-                  required: "Password is required",
                   minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
+                    value: 3,
+                    message: "Username must be at least 3 characters",
                   },
                 })}
+                error={errors.username?.message}
               />
-              {errors.password && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            {authMode === AuthModes.signup && (
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  className={`w-full rounded foucs:outline-none ${
-                    errors.cpassword &&
-                    "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  }`}
-                  {...register("cpassword", {
-                    required: "Password is required",
-                    validate: value => {
-                      return (
-                        value === getValues("password") ||
-                        "Passwords do not match"
-                      );
-                    },
-                  })}
-                />
-                {errors.cpassword && (
-                  <p className="text-red-500 text-xs italic">
-                    {errors.cpassword.message}
-                  </p>
-                )}
-              </div>
             )}
-            <p className="mt-2">
+            <Input
+              label="Email"
+              type="email"
+              register={register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: RegExp(
+                    "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$"
+                  ),
+                  message: "Invalid email address",
+                },
+              })}
+              error={errors.email?.message}
+            />
+            <Input
+              label="Password"
+              type="password"
+              register={register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              error={errors.password?.message}
+            />
+            {authMode === AuthModes.signup && (
+              <Input
+                label="Confirm Password"
+                type="password"
+                register={register("cpassword", {
+                  required: "Password is required",
+                  validate: value => {
+                    return (
+                      value === getValues("password") ||
+                      "Passwords do not match"
+                    );
+                  },
+                })}
+                error={errors.cpassword?.message}
+              />
+            )}
+            <p className="mt-2 dark:text-gray-200">
               {authMode === AuthModes.login
                 ? "Don't have an account? "
                 : "Already have an account? "}
               <button
                 type="button"
-                className="text-blue-500"
+                className="text-blue-500 dark:text-blue-400"
                 onClick={switchAuthMode}
               >
                 {authMode === AuthModes.login ? "Sign up" : "Login"}
               </button>
             </p>
-            <div className="text-center mt-7 w-full bg-blue-700 rounded py-2 text-gray-100 cursor-pointer">
-              <button>
-                {authMode === AuthModes.login ? "Login" : "Sign up"}
+            {error && (
+              <div className="text-red-500 text-sm italic mt-2">{error}</div>
+            )}
+            <div className="mt-7 w-full bg-blue-700  rounded py-2 text-gray-100 cursor-pointer">
+              <button className="flex justify-center w-full align-middle">
+                {isLoading ? (
+                  <Spinner />
+                ) : authMode === AuthModes.login ? (
+                  "Login"
+                ) : (
+                  "Sign up"
+                )}
               </button>
             </div>
           </form>
