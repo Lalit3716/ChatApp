@@ -24,7 +24,7 @@ const Room = () => {
           </p>
         </div>
       </div>
-      <div className="overflow-auto p-4 h-full dark:text-gray-200 flex-1">
+      <div className="overflow-auto p-4 dark:text-gray-200 flex-1">
         <ChatBox
           message="Hello How Are You?"
           isAuthor={true}

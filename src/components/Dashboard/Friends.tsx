@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import FriendsList from "../Chats/FriendsList";
 import SearchBar from "../Utils/InputBar";
 
 const Friends: FC = () => {
@@ -39,6 +40,9 @@ const Friends: FC = () => {
             </button>
           )}
         </div>
+      </div>
+      <div className="w-full">
+        <FriendsList />
       </div>
     </div>
   );
