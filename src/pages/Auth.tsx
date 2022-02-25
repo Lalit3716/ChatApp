@@ -5,6 +5,7 @@ import Input from "../components/Utils/Input";
 import useHttp from "../hooks/useHttp";
 import authContext from "../contexts/authContext";
 import Spinner from "../components/Utils/Spinner";
+import { Request } from "../utils/request";
 
 enum AuthModes {
   login,
@@ -34,21 +35,7 @@ const AuthPage: FC = () => {
       authMode === AuthModes.login ? "login" : "signup"
     }`;
 
-    const response: Response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message);
-    }
-
-    return responseData;
+    return await Request.post(url, formData);
   };
 
   const onSubmit = (formData: FieldValues) => {

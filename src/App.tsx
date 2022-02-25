@@ -1,25 +1,21 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { Routes, Route } from "react-router";
 
 import Layout from "./components/Layout/Layout";
-import AuthPage from "./pages/Auth";
-import authContext from "./contexts/authContext";
 import Dashboard from "./pages/Dashboard";
 import Friends from "./components/Dashboard/Friends";
 import Room from "./components/Dashboard/Room";
+import RouteGuard from "./components/Guard/RouteGuard";
 
 const App: FC = () => {
-  const { isAuthenticated } = useContext(authContext);
-
   return (
     <Layout>
       <Routes>
-        <Route
-          path="/"
-          element={isAuthenticated ? <Dashboard /> : <AuthPage />}
-        >
-          <Route path="/friends/all" element={<Friends />} />
-          <Route path="/chats/:roomId" element={<Room />} />
+        <Route element={<RouteGuard />}>
+          <Route path="/" element={<Dashboard />}>
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/chats/:roomId" element={<Room />} />
+          </Route>
         </Route>
       </Routes>
     </Layout>

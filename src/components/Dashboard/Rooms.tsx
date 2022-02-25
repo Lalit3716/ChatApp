@@ -10,17 +10,20 @@ const Rooms: FC = () => {
 
   const handleClick = (roomId?: string) => {
     if (!roomId) {
-      navigate("/friends/all");
+      navigate("/friends");
     } else {
       navigate("/chats/" + roomId);
     }
   };
 
   return (
-    <nav aria-label="alternative nav" className="h-full w-60">
+    <nav
+      aria-label="alternative nav"
+      className="h-full w-60 border-gray-400 border-r-2 dark:border-none"
+    >
       <div className="h-full overflow-auto dark:bg-slate-600 bg-gray-100">
         <div
-          className={`dark:text-gray-300 text-gray-700 flex items-center p-4 hover:bg-gray-200 hover:dark:bg-gray-700 cursor-pointer justify-center ${
+          className={`dark:text-gray-100 text-gray-700 flex items-center p-4 hover:bg-gray-200 text-lg hover:dark:bg-gray-700 cursor-pointer ${
             !roomId && pathname !== "/" && "bg-gray-200 dark:bg-gray-700"
           }`}
           onClick={() => handleClick()}

@@ -2,7 +2,7 @@ import { FC, useContext } from "react";
 import authContext from "../../contexts/authContext";
 
 const Navbar: FC = () => {
-  const { user } = useContext(authContext);
+  const { user, logout } = useContext(authContext);
 
   return (
     <nav className="flex align-middle justify-between bg-gray-300 dark:bg-slate-700 p-4">
@@ -23,6 +23,12 @@ const Navbar: FC = () => {
           </h1>
           <p className="dark:text-gray-300 text-gray-500">{user!.email}</p>
         </div>
+        <button
+          onClick={logout}
+          className="border dark:bg-blue-700 ml-2 p-2 rounded hover:dark:bg-blue-800 text-white bg-blue-400 hover:bg-blue-500"
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );
