@@ -1,4 +1,7 @@
 import React, { FC, useContext } from "react";
+import { Outlet } from "react-router";
+import Rooms from "../components/Dashboard/Rooms";
+import Navbar from "../components/Layout/Navbar";
 
 import authContext from "../contexts/authContext";
 
@@ -6,14 +9,17 @@ const Dashboard: FC = () => {
   const { logout } = useContext(authContext);
 
   return (
-    <div>
-      <h1 className="text-center text-6xl">Chat App</h1>
-      <button
-        onClick={logout}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+    <div className="flex flex-col h-full">
+      <Navbar />
+      <main
+        className="flex-1 flex flex-row"
+        style={{
+          maxHeight: "calc(100vh - 72px)",
+        }}
       >
-        Log Out
-      </button>
+        <Rooms />
+        <Outlet />
+      </main>
     </div>
   );
 };

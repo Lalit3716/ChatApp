@@ -6,15 +6,15 @@ enum ThemeMode {
 }
 
 const Layout: FC = props => {
-  const [theme, setTheme] = useState(ThemeMode.light);
+  const [theme, setTheme] = useState(ThemeMode.dark);
 
   const toggleThemes = () => {
     setTheme(theme === ThemeMode.light ? ThemeMode.dark : ThemeMode.light);
   };
 
   return (
-    <div className={theme === ThemeMode.dark ? "dark" : ""}>
-      <div className="dark:bg-gray-800 bg-gray-200 h-screen w-screen">
+    <div className={theme === ThemeMode.dark ? "dark h-full" : "h-full"}>
+      <div className="dark:bg-gray-800 bg-gray-200 h-full w-screen">
         {props.children}
       </div>
       <div className="fixed bottom-0 right-0 m-4">

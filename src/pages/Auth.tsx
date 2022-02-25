@@ -60,10 +60,10 @@ const AuthPage: FC = () => {
   return (
     <div className="container mx-auto">
       <h1 className="text-5xl pt-5 text-center dark:text-blue-200 text-gray-800">
-        Chat app
+        Quick Chat
       </h1>
-      <div className="flex justify-center mt-10">
-        <div className="w-full max-w-sm">
+      <div className="flex justify-center mt-8">
+        <div className="w-full max-w-lg">
           <form
             className="dark:bg-slate-700 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-9"
             onSubmit={handleSubmit(onSubmit)}
