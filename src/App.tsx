@@ -14,7 +14,7 @@ const App: FC = () => {
         <Route element={<RouteGuard />}>
           <Route path="/" element={<Dashboard />}>
             <Route path="/friends" element={<Friends />} />
-            <Route path="/chats/:roomId" element={<Room />} />
+            <Route path="/chats/:friendId" element={<Room />} />
           </Route>
         </Route>
       </Routes>

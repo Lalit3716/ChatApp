@@ -1,9 +1,14 @@
-const request = async (url: string, options: RequestInit) => {
+interface RequestOptions extends RequestInit {
+  token?: string | null;
+}
+
+const request = async (url: string, options: RequestOptions) => {
   const response = await fetch(url, {
     ...options,
     headers: {
       ...options.headers,
-      "Content-Type": "application/json",
+      Authorization: options.token ? `Bearer ${options.token}` : "",
+      "Content-type": "application/json",
     },
   });
 
@@ -17,14 +22,14 @@ const request = async (url: string, options: RequestInit) => {
 };
 
 export class Request {
-  static async get(url: string, options?: RequestInit) {
+  static async get(url: string, options?: RequestOptions) {
     return await request(url, {
       method: "GET",
       ...options,
     });
   }
 
-  static async post(url: string, body: any, options?: RequestInit) {
+  static async post(url: string, body: any, options?: RequestOptions) {
     const jsonBody = JSON.stringify(body);
 
     return await request(url, {
@@ -34,7 +39,7 @@ export class Request {
     });
   }
 
-  static async put(url: string, body: any, options?: RequestInit) {
+  static async put(url: string, body: any, options?: RequestOptions) {
     const jsonBody = JSON.stringify(body);
 
     return await request(url, {

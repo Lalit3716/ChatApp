@@ -1,38 +1,44 @@
 import { FC } from "react";
+import { User } from "../../interfaces/auth";
+import { Request } from "../../interfaces/request";
+import FriendsListItem from "./FriendsListItem";
 
 interface Props {
-  friends: any;
   type: "requests" | "friends";
+  filterOnline?: boolean;
+  friends: Request[] | User[];
 }
 
-const FriendsList: FC = () => {
+const FriendsList: FC<Props> = ({ friends, type, filterOnline = false }) => {
   return (
-    <div className="mt-2 bg-slate-600 rounded p-4">
+    <div className="mt-2 rounded p-4">
       <ul>
-        <li className="flex items-center">
-          <img
-            src={`https://avatars.dicebear.com/api/initials/${"joe"}.svg`}
-            alt="avatar"
-            className="w-10 h-10 rounded-full mr-4"
-          />
-          <div className="text-sm">
-            <h1 className="text-gray-800 dark:text-gray-100 font-semibold">
-              {"Jane Doe"}
-            </h1>
-            <p className="dark:text-gray-300 text-gray-500">
-              {"user1@gmail.com"}
-            </p>
-          </div>
-          <div className="ml-auto space-x-2">
-            <button className="w-10 h-10 rounded-full text-white bg-slate-700 hover:bg-slate-800">
-              <i className="fa fa-comment-dots" />
-            </button>
-            <button className="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-800 rotate-45 text-red-500">
-              <i className="fas fa-plus" />
-            </button>
-          </div>
-        </li>
+        {friends.map((friend, index) => {
+          if (type === "requests") {
+            return (
+              <FriendsListItem item={friend} type="requests" key={index} />
+            );
+          }
+          if (type === "friends") {
+            if (filterOnline) {
+              if ((friend as User).online) {
+                return (
+                  <FriendsListItem item={friend} type="friends" key={index} />
+                );
+              }
+            } else {
+              return (
+                <FriendsListItem item={friend} type="friends" key={index} />
+              );
+            }
+          }
+        })}
       </ul>
+      {friends.length === 0 && (
+        <div className="text-center dark:text-gray-200">
+          {type === "requests" ? "No requests" : "No friends"}
+        </div>
+      )}
     </div>
   );
 };

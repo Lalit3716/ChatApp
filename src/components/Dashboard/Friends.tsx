@@ -1,10 +1,30 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
+import { friendsContext } from "../../contexts/friendsContext";
+import { Request } from "../../utils/request";
 import FriendsList from "../Chats/FriendsList";
 import SearchBar from "../Utils/InputBar";
+import useHttp from "../../hooks/useHttp";
+import { User } from "../../interfaces/auth";
 
 const Friends: FC = () => {
+  const { isLoading, sendRequest, error } = useHttp();
   const [active, setActive] = useState("all");
   const [search, setSearch] = useState("");
+  const { friends, requests, sendRequestTo } = useContext(friendsContext);
+
+  const onSendRequest = (username: string) => {
+    if (!username) {
+      return;
+    }
+    const url = "http://localhost:8000/users/" + username;
+    sendRequest(
+      () => Request.get(url),
+      {},
+      (user: User) => {
+        sendRequestTo(user);
+      }
+    );
+  };
 
   return (
     <div className="h-full p-4 flex-1 overflow-auto">
@@ -32,9 +52,16 @@ const Friends: FC = () => {
             onChange={setSearch}
             placeHolder={active === "requests" ? "Username" : "Search"}
             icon="search"
+            error={error && active === "requests"}
           />
+          {error !== "" && active === "requests" && (
+            <div className="text-red-500">{error}</div>
+          )}
           {active === "requests" && (
-            <button className="mt-2 bg-green-400 text-gray-900 rounded px-4 py-2">
+            <button
+              className="mt-2 bg-green-400 text-gray-900 rounded px-4 py-2"
+              onClick={() => onSendRequest(search)}
+            >
               <i className="fas fa-plus" />
               <span className="ml-2">Add Friend</span>
             </button>
@@ -42,7 +69,11 @@ const Friends: FC = () => {
         </div>
       </div>
       <div className="w-full">
-        <FriendsList />
+        <FriendsList
+          friends={active === "requests" ? requests : friends}
+          type={active === "requests" ? "requests" : "friends"}
+          filterOnline={active === "online"}
+        />
       </div>
     </div>
   );

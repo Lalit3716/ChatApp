@@ -4,6 +4,7 @@ interface Props {
   placeHolder?: string;
   icon?: string;
   value: string;
+  error: boolean;
   onChange: (value: string) => void;
   onSubmit?: () => void;
 }
@@ -13,7 +14,9 @@ const SearchBar: FC<Props> = props => {
     <div className="relative">
       <input
         type="text"
-        className="w-full bg-transparent dark:text-gray-50 rounded outline-none border-gray-500 border-2"
+        className={`w-full bg-transparent dark:text-gray-50 rounded outline-none ${
+          props.error ? "border-red-500" : "border-gray-500"
+        } border-2`}
         placeholder={props.placeHolder}
         value={props.value}
         onChange={e => props.onChange(e.currentTarget.value)}
