@@ -5,22 +5,35 @@ import FriendsList from "../Chats/FriendsList";
 import SearchBar from "../Utils/InputBar";
 import useHttp from "../../hooks/useHttp";
 import { User } from "../../interfaces/auth";
+import authContext from "../../contexts/authContext";
 
 const Friends: FC = () => {
   const { isLoading, sendRequest, error } = useHttp();
   const [active, setActive] = useState("all");
   const [search, setSearch] = useState("");
   const { friends, requests, sendRequestTo } = useContext(friendsContext);
+  const { user: loggedInUser } = useContext(authContext);
 
   const onSendRequest = (username: string) => {
     if (!username) {
       return;
     }
-    const url = "http://localhost:8000/users/" + username;
+    const url =
+      `${process.env.SERVER || "http://localhost:8000"}/users/` + username;
     sendRequest(
       () => Request.get(url),
       {},
       (user: User) => {
+        if (user._id === loggedInUser!._id) {
+          alert("You can't send request to yourself");
+          return;
+        }
+
+        if (friends.find(f => f._id.toString() === user._id.toString())) {
+          alert("You are already friends with this user");
+          return;
+        }
+
         sendRequestTo(user);
       }
     );

@@ -13,7 +13,8 @@ interface Props {
 const FriendsListItem: FC<Props> = ({ item, type }) => {
   const navigate = useNavigate();
   const { user } = useContext(authContext);
-  const { acceptRequest, rejectRequest } = useContext(friendsContext);
+  const { acceptRequest, rejectRequest, cancelRequest, removeFriend } =
+    useContext(friendsContext);
 
   let username, email, isSender;
   if (type === "requests") {
@@ -28,6 +29,20 @@ const FriendsListItem: FC<Props> = ({ item, type }) => {
     username = (item as User).username;
     email = (item as User).email;
   }
+
+  const handleCrossClick = () => {
+    if (type === "friends") {
+      alert("I'm sorry, but it's not implemented yet");
+      // removeFriend(item as User);
+    } else {
+      const isSender = (item as Request).sender._id === user!._id;
+      if (isSender) {
+        cancelRequest(item as Request);
+      } else {
+        rejectRequest(item as Request);
+      }
+    }
+  };
 
   return (
     <li className="flex items-center mb-5 dark:bg-slate-600 bg-gray-300 rounded p-4">
@@ -61,7 +76,7 @@ const FriendsListItem: FC<Props> = ({ item, type }) => {
         )}
         <button
           className="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-800 rotate-45 text-red-500"
-          onClick={() => rejectRequest(item as Request)}
+          onClick={handleCrossClick}
         >
           <i className="fas fa-plus" />
         </button>

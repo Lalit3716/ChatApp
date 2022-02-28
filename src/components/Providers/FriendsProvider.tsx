@@ -3,17 +3,17 @@ import authContext from "../../contexts/authContext";
 import { friendsContext } from "../../contexts/friendsContext";
 import useHttp from "../../hooks/useHttp";
 import { User } from "../../interfaces/auth";
-import { Request as RequestsType } from "../../interfaces/request";
+import { Request as RequestType } from "../../interfaces/request";
 import { Request } from "../../utils/request";
 
 const FriendsProvider: FC = ({ children }) => {
   const [friends, setFriends] = useState<User[]>([]);
-  const [requests, setRequests] = useState<RequestsType[]>([]);
+  const [requests, setRequests] = useState<RequestType[]>([]);
   const { sendRequest } = useHttp();
   const { token, user, socket } = useContext(authContext);
 
   useEffect(() => {
-    const url = "http://localhost:8000";
+    const url = `${process.env.SERVER || "http://localhost:8000"}`;
 
     if (!token) return;
     if (!socket) return;
@@ -27,27 +27,58 @@ const FriendsProvider: FC = ({ children }) => {
     sendRequest(
       () => Request.get(`${url}/requests`, { token }),
       {},
-      (data: RequestsType[]) => setRequests(data)
+      (data: RequestType[]) => setRequests(data)
     );
 
     socket!.on("request", data => {
-      setRequests(prevRequests => [data, ...prevRequests]);
+      setRequests(prevRequests => {
+        return [data, ...prevRequests];
+      });
     });
 
     socket!.on("accept", requestId => {
-      const request = requests.find(r => r._id === requestId);
+      setRequests(prevRequests => {
+        const req = prevRequests.find(r => r._id === requestId);
+        if (!req) return prevRequests;
 
-      setFriends(prevFriends => [...prevFriends, request!.sender]);
-
-      setRequests(prevRequests =>
-        prevRequests.filter(r => r._id !== requestId)
-      );
+        setFriends(prevFriends => [
+          ...prevFriends,
+          { ...req!.receiver, online: true },
+        ]);
+        return prevRequests.filter(r => r._id !== requestId);
+      });
     });
 
     socket!.on("reject", requestId => {
       setRequests(prevRequests =>
         prevRequests.filter(r => r._id !== requestId)
       );
+    });
+
+    socket!.on("user-offline", userId => {
+      setFriends(prevFriends => {
+        const friend = prevFriends.find(f => f._id === userId);
+        if (!friend) return prevFriends;
+
+        friend.online = false;
+
+        return [...prevFriends];
+      });
+    });
+
+    socket!.on("user-online", userId => {
+      setFriends(prevFriends => {
+        const friend = prevFriends.find(f => f._id === userId);
+        if (!friend) return prevFriends;
+
+        friend.online = true;
+
+        return [...prevFriends];
+      });
+    });
+
+    socket!.on("removeFriend", (userId: string) => {
+      setFriends(prevFriends => prevFriends.filter(f => f._id !== userId));
     });
   }, [socket, token]);
 
@@ -58,28 +89,48 @@ const FriendsProvider: FC = ({ children }) => {
         sender: user!._id,
         receiver: toUser._id,
       },
-      (request: RequestsType) => {
+      (request: RequestType) => {
         setRequests(prevrequests => [request, ...prevrequests]);
       }
     );
   };
 
-  const acceptRequest = (request: RequestsType) => {
+  const acceptRequest = (request: RequestType) => {
     socket!.emit("accept", request._id);
 
-    setFriends(prevFriends => [...prevFriends, request.sender]);
+    setFriends(prevFriends => [
+      ...prevFriends,
+      { ...request.sender, online: true },
+    ]);
 
     setRequests(prevRequests =>
       prevRequests.filter(r => r._id !== request._id)
     );
   };
 
-  const rejectRequest = (request: RequestsType) => {
+  const rejectRequest = (request: RequestType) => {
     socket!.emit("reject", request._id);
 
     setRequests(prevRequests =>
       prevRequests.filter(r => r._id !== request._id)
     );
+  };
+
+  const cancelRequest = (request: RequestType) => {
+    socket!.emit("cancelRequest", request._id);
+
+    setRequests(prevRequests =>
+      prevRequests.filter(r => r._id !== request._id)
+    );
+  };
+
+  const removeFriend = (friend: User) => {
+    socket!.emit("removeFriend", {
+      userId: user!._id,
+      friendId: friend._id,
+    });
+
+    setFriends(prevFriends => prevFriends.filter(f => f._id !== friend._id));
   };
 
   return (
@@ -90,6 +141,8 @@ const FriendsProvider: FC = ({ children }) => {
         sendRequestTo,
         acceptRequest,
         rejectRequest,
+        cancelRequest,
+        removeFriend,
       }}
     >
       {children}

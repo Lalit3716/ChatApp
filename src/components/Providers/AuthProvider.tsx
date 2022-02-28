@@ -20,7 +20,7 @@ const AuthProvider: FC = props => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const newSocket = io("http://localhost:8000");
+      const newSocket = io(`${process.env.SERVER || "http://localhost:8000"}`);
       newSocket.emit("initUser", user!._id);
       setSocket(newSocket);
     }
@@ -34,7 +34,7 @@ const AuthProvider: FC = props => {
     setIsAuthenticated(true);
 
     setSocket(() => {
-      const newSocket = io("http://localhost:8000");
+      const newSocket = io(`${process.env.SERVER || "http://localhost:8000"}`);
       newSocket.emit("initUser", user._id);
       return newSocket;
     });

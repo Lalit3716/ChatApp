@@ -31,7 +31,7 @@ const AuthPage: FC = () => {
   };
 
   const authenticate = async (formData: FieldValues): Promise<any> => {
-    const url = `http://localhost:8000/auth/${
+    const url = `${process.env.SERVER || "http://localhost:8000"}/auth/${
       authMode === AuthModes.login ? "login" : "signup"
     }`;
 

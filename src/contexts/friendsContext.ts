@@ -8,6 +8,8 @@ interface Props {
   sendRequestTo: (user: User) => void;
   acceptRequest: (request: Request) => void;
   rejectRequest: (request: Request) => void;
+  cancelRequest: (request: Request) => void;
+  removeFriend: (user: User) => void;
 }
 
 export const friendsContext = createContext<Props>({
@@ -16,4 +18,6 @@ export const friendsContext = createContext<Props>({
   sendRequestTo: () => {},
   acceptRequest: () => {},
   rejectRequest: () => {},
+  cancelRequest: () => {},
+  removeFriend: () => {},
 });

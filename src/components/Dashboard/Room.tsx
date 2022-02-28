@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import authContext from "../../contexts/authContext";
 import { friendsContext } from "../../contexts/friendsContext";
 import useHttp from "../../hooks/useHttp";
@@ -10,10 +10,11 @@ import { User } from "../../interfaces/auth";
 import { Chat } from "../../interfaces/chat";
 
 const Room = () => {
+  const navigate = useNavigate();
   const { friendId } = useParams();
   const [friend, setFriend] = useState<User | undefined>();
   const { isLoading, sendRequest } = useHttp();
-  const { user, socket } = useContext(authContext);
+  const { user, socket, token } = useContext(authContext);
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
   const { friends } = useContext(friendsContext);
@@ -21,6 +22,9 @@ const Room = () => {
   useEffect(() => {
     if (friends) {
       const friend = friends.find(f => f._id === friendId);
+      if (!friend) {
+        navigate("/friends");
+      }
       setFriend(friend);
     }
   }, [friends, friendId]);
@@ -32,15 +36,17 @@ const Room = () => {
     socket!.emit("joinRoom", roomId);
 
     socket!.on("message", chat => {
-      setChats(prevChats => [...prevChats, chat]);
+      setChats(prevChats => [chat, ...prevChats]);
     });
   }, [socket, friendId]);
 
   useEffect(() => {
     const roomId = [user!._id, friendId].sort().join("-");
-    const url = `http://localhost:8000/chats/${roomId}`;
+    const url = `${
+      process.env.SERVER || "http://localhost:8000"
+    }/chats/${roomId}`;
     sendRequest(
-      () => Request.get(url),
+      () => Request.get(url, { token }),
       {},
       (data: Chat[]) => {
         setChats(data);
@@ -83,7 +89,7 @@ const Room = () => {
           <p className="dark:text-gray-300 text-gray-500">{friend?.email}</p>
         </div>
       </div>
-      <div className="overflow-auto p-4 dark:text-gray-200 flex-1">
+      <div className="overflow-auto p-4 dark:text-gray-200 flex-1 flex flex-col-reverse">
         {!isLoading &&
           chats.map((chat, index) => (
             <ChatBox

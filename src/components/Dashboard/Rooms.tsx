@@ -60,6 +60,9 @@ const Rooms: FC = () => {
                 <h1 className="text-gray-800 dark:text-gray-100 font-semibold">
                   {friend.username}
                 </h1>
+                <p className="dark:text-gray-300 text-gray-500">
+                  {friend.online ? "Online" : "Offline"}
+                </p>
               </div>
             </div>
           ))}
