@@ -13,7 +13,7 @@ const FriendsProvider: FC = ({ children }) => {
   const { token, user, socket } = useContext(authContext);
 
   useEffect(() => {
-    const url = `${process.env.SERVER || "http://localhost:8000"}`;
+    const url = import.meta.env.VITE_SERVER;
 
     if (!token) return;
     if (!socket) return;

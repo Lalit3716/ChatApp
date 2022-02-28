@@ -42,9 +42,7 @@ const Room = () => {
 
   useEffect(() => {
     const roomId = [user!._id, friendId].sort().join("-");
-    const url = `${
-      process.env.SERVER || "http://localhost:8000"
-    }/chats/${roomId}`;
+    const url = `${import.meta.env.VITE_SERVER}/chats/${roomId}`;
     sendRequest(
       () => Request.get(url, { token }),
       {},

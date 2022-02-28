@@ -31,7 +31,7 @@ const AuthPage: FC = () => {
   };
 
   const authenticate = async (formData: FieldValues): Promise<any> => {
-    const url = `${process.env.SERVER || "http://localhost:8000"}/auth/${
+    const url = `${import.meta.env.VITE_SERVER}/auth/${
       authMode === AuthModes.login ? "login" : "signup"
     }`;
 

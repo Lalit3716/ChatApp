@@ -18,8 +18,7 @@ const Friends: FC = () => {
     if (!username) {
       return;
     }
-    const url =
-      `${process.env.SERVER || "http://localhost:8000"}/users/` + username;
+    const url = `${import.meta.env.VITE_SERVER}/users/` + username;
     sendRequest(
       () => Request.get(url),
       {},
