@@ -69,6 +69,11 @@ const Rooms: FC = () => {
                 <h1 className="text-gray-800 dark:text-gray-100 font-semibold">
                   {friend.username}
                 </h1>
+                <span className="text-sm text-gray-700 dark:text-gray-200 text-ellipsis">
+                  {friend.lastMessage && friend.lastMessage.length > 20
+                    ? friend.lastMessage?.substring(0, 20) + "..."
+                    : friend.lastMessage}
+                </span>
               </div>
             </div>
           ))}

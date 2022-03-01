@@ -3,4 +3,6 @@ export interface User {
   username: string;
   email: string;
   online: true | false;
+  lastMessage?: string;
+  lastMessageCreatedAt?: Date;
 }

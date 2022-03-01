@@ -1,4 +1,5 @@
 import { FC } from "react";
+import formatDate from "../../utils/formatDate";
 
 interface Props {
   message: string;
@@ -6,17 +7,9 @@ interface Props {
   date: Date;
 }
 
-const format = (date: Date): string => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  const ampm = hours >= 12 ? "pm" : "am";
-  const hoursFormatted = hours % 12 === 0 ? 12 : hours % 12;
-  return `${hoursFormatted}:${minutes} ${ampm}`;
-};
-
 const ChatBox: FC<Props> = props => {
   const { message, isAuthor } = props;
-  const date = format(props.date);
+  const date = formatDate(props.date);
 
   return (
     <div
@@ -29,8 +22,8 @@ const ChatBox: FC<Props> = props => {
         minWidth: "200px",
       }}
     >
-      <div className={`text-gray-800 ${"dark:text-gray-200"}`}>{message}</div>
-      <div className={`text-xs text-gray-500 dark:text-gray-400`}>{date}</div>
+      <div className="text-gray-800 dark:text-gray-200">{message}</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">{date}</div>
     </div>
   );
 };
