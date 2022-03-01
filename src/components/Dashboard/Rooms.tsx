@@ -49,20 +49,26 @@ const Rooms: FC = () => {
               }`}
               onClick={() => handleClick(friend._id)}
             >
-              <img
-                src={`https://avatars.dicebear.com/api/initials/${
-                  friend!.username
-                }.svg`}
-                alt="avatar"
-                className="w-10 h-10 rounded-full mr-4"
-              />
+              <div className="relative">
+                <img
+                  src={`https://avatars.dicebear.com/api/initials/${
+                    friend!.username
+                  }.svg`}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full mr-4"
+                />
+                <span className="flex h-3 w-3 absolute bottom-0 right-4">
+                  <span
+                    className={`${
+                      friend.online ? "bg-green-500" : "bg-gray-500"
+                    } rounded-full h-full w-full inline-flex border border-gray-600`}
+                  />
+                </span>
+              </div>
               <div className="text-sm">
                 <h1 className="text-gray-800 dark:text-gray-100 font-semibold">
                   {friend.username}
                 </h1>
-                <p className="dark:text-gray-300 text-gray-500">
-                  {friend.online ? "Online" : "Offline"}
-                </p>
               </div>
             </div>
           ))}

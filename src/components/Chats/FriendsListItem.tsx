@@ -32,8 +32,7 @@ const FriendsListItem: FC<Props> = ({ item, type }) => {
 
   const handleCrossClick = () => {
     if (type === "friends") {
-      alert("I'm sorry, but it's not implemented yet");
-      // removeFriend(item as User);
+      removeFriend(item as User);
     } else {
       const isSender = (item as Request).sender._id === user!._id;
       if (isSender) {
@@ -60,7 +59,7 @@ const FriendsListItem: FC<Props> = ({ item, type }) => {
       <div className="ml-auto space-x-2">
         {type === "friends" && (
           <button
-            className="w-10 h-10 rounded-full text-white bg-slate-700 hover:bg-slate-800"
+            className="w-10 h-10 rounded-full text-white dark:bg-slate-700 hover:dark:bg-slate-800 bg-gray-500 hover:bg-gray-600"
             onClick={() => navigate(`/chats/${item._id}`)}
           >
             <i className="fa fa-comment-dots" />
@@ -75,7 +74,7 @@ const FriendsListItem: FC<Props> = ({ item, type }) => {
           </button>
         )}
         <button
-          className="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-800 rotate-45 text-red-500"
+          className="w-10 h-10 rounded-full dark:bg-slate-700 hover:dark:bg-slate-800 rotate-45 text-red-500 bg-gray-500 hover:bg-gray-600"
           onClick={handleCrossClick}
         >
           <i className="fas fa-plus" />

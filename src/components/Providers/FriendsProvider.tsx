@@ -31,6 +31,7 @@ const FriendsProvider: FC = ({ children }) => {
     );
 
     socket!.on("request", data => {
+      console.log(data);
       setRequests(prevRequests => {
         return [data, ...prevRequests];
       });
