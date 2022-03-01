@@ -1,0 +1,3 @@
+[submodule "ChatApp-Server"]
+	path = ChatApp-Server
+	url = https://github.com/Lalit3716/ChatApp-Server.git
