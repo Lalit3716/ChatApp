@@ -44,7 +44,7 @@ const Rooms: FC = () => {
           friends.map((friend, index) => (
             <div
               key={index}
-              className={`flex items-center py-3 pl-1 cursor-pointer hover:bg-gray-200 hover:dark:bg-gray-700 ${
+              className={`flex items-center relative py-3 pl-1 cursor-pointer hover:bg-gray-200 hover:dark:bg-gray-700 ${
                 friend._id === friendId ? "bg-gray-200 dark:bg-gray-700" : ""
               }`}
               onClick={() => handleClick(friend._id)}
@@ -75,6 +75,11 @@ const Rooms: FC = () => {
                     : friend.lastMessage}
                 </span>
               </div>
+              {friend.unseen !== 0 && (
+                <span className="text-gray-200 flex justify-center items-center text-center ml-auto mr-2 w-5 h-5 bg-green-500 rounded-full">
+                  <span className="">{friend.unseen}</span>
+                </span>
+              )}
             </div>
           ))}
       </div>

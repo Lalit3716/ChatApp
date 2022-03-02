@@ -11,6 +11,7 @@ interface Props {
   cancelRequest: (request: Request) => void;
   removeFriend: (user: User) => void;
   updateLastMessage: (id: string, message: string) => void;
+  markAsSeen: (id: string) => void;
 }
 
 export const friendsContext = createContext<Props>({
@@ -22,4 +23,5 @@ export const friendsContext = createContext<Props>({
   cancelRequest: () => {},
   removeFriend: () => {},
   updateLastMessage: () => {},
+  markAsSeen: () => {},
 });

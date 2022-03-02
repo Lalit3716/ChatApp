@@ -5,4 +5,5 @@ export interface User {
   online: true | false;
   lastMessage?: string;
   lastMessageCreatedAt?: Date;
+  unseen: number;
 }

@@ -32,7 +32,6 @@ const FriendsProvider: FC = ({ children }) => {
     );
 
     socket!.on("request", data => {
-      console.log(data);
       setRequests(prevRequests => {
         return [data, ...prevRequests];
       });
@@ -45,7 +44,7 @@ const FriendsProvider: FC = ({ children }) => {
 
         setFriends(prevFriends => [
           ...prevFriends,
-          { ...req!.receiver, online: true },
+          { ...req!.receiver, online: true, unseen: 0 },
         ]);
         return prevRequests.filter(r => r._id !== requestId);
       });
@@ -92,6 +91,10 @@ const FriendsProvider: FC = ({ children }) => {
         sender.lastMessage = chat.message;
         sender.lastMessageCreatedAt = chat.createdAt;
 
+        if (!chat.seen) {
+          sender.unseen += 1;
+        }
+
         return [...prevFriends];
       });
     });
@@ -115,7 +118,7 @@ const FriendsProvider: FC = ({ children }) => {
 
     setFriends(prevFriends => [
       ...prevFriends,
-      { ...request.sender, online: true },
+      { ...request.sender, online: true, unseen: 0 },
     ]);
 
     setRequests(prevRequests =>
@@ -161,6 +164,18 @@ const FriendsProvider: FC = ({ children }) => {
     });
   };
 
+  const markAsSeen = (id: string) => {
+    setFriends(prevFriends => {
+      const friend = prevFriends.find(f => f._id === id);
+
+      if (!friend) return prevFriends;
+
+      friend.unseen = 0;
+
+      return [...prevFriends];
+    });
+  };
+
   return (
     <friendsContext.Provider
       value={{
@@ -172,6 +187,7 @@ const FriendsProvider: FC = ({ children }) => {
         cancelRequest,
         removeFriend,
         updateLastMessage,
+        markAsSeen,
       }}
     >
       {children}

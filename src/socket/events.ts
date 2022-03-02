@@ -8,7 +8,7 @@ export interface ClientEvents {
   reject: (id: string) => void;
   leaveRoom: (id: string) => void;
   message: (data: Chat) => void;
-  joinRoom: (id: string) => void;
+  joinRoom: (data: any) => void;
   cancelRequest: (id: string) => void;
   removeFriend: (id: any) => void;
 }
@@ -20,6 +20,7 @@ export interface ServerEvents {
   reject: (requestId: string) => void;
   message: (chat: Chat) => void;
   removeFriend: (id: string) => void;
+  seenMessages: () => void;
   "message-notify": (chat: Chat) => void;
   "user-offline": (userId: string) => void;
   "user-online": (userId: string) => void;

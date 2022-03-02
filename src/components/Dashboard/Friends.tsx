@@ -52,34 +52,45 @@ const Friends: FC = () => {
             active={active === "online"}
             onClick={() => setActive("online")}
           />
-          <Tab
-            label="Requests"
-            active={active === "requests"}
-            onClick={() => setActive("requests")}
-          />
-        </div>
-        {active === "requests" && (
-          <div className="flex items-center md:space-x-1 md:flex-row flex-col space-y-1 md:space-y-0">
-            <SearchBar
-              value={search}
-              onChange={setSearch}
-              placeHolder={active === "requests" ? "Username" : "Search"}
-              icon="search"
-              error={error && active === "requests"}
+          <div className="relative">
+            <Tab
+              label="Requests"
+              active={active === "requests"}
+              onClick={() => setActive("requests")}
             />
-            {error !== "" && active === "requests" && (
-              <div className="text-red-500">{error}</div>
-            )}
-            {active === "requests" && (
-              <button
-                className="bg-green-400 text-gray-900 rounded px-4 py-2.5"
-                onClick={() => onSendRequest(search)}
-              >
-                <i className="fas fa-plus" />
-                <span className="ml-2">Add Friend</span>
-              </button>
+            {requests.length > 0 && (
+              <span className="w-4 h-4 bg-red-500 rounded-full absolute -right-3 -top-1 text-sm text-white flex justify-center items-center font-bold">
+                {requests.length}
+              </span>
             )}
           </div>
+        </div>
+        {active === "requests" && (
+          <>
+            <div className="flex items-center md:space-x-1 md:flex-row flex-col space-y-1 md:space-y-0">
+              <div>
+                <SearchBar
+                  value={search}
+                  onChange={setSearch}
+                  placeHolder={active === "requests" ? "Username" : "Search"}
+                  icon="search"
+                  error={error && active === "requests"}
+                />
+                {error !== "" && active === "requests" && (
+                  <div className="text-red-500">{error}</div>
+                )}
+              </div>
+              {active === "requests" && (
+                <button
+                  className="bg-green-400 text-gray-900 rounded px-4 py-2.5"
+                  onClick={() => onSendRequest(search)}
+                >
+                  <i className="fas fa-plus" />
+                  <span className="ml-2">Add Friend</span>
+                </button>
+              )}
+            </div>
+          </>
         )}
       </div>
       <div className="w-full">
@@ -103,7 +114,7 @@ const Tab: FC<TabProps> = props => {
   return (
     <div onClick={props.onClick}>
       <span
-        className={`dark:font-semibold cursor-pointer ${
+        className={`dark:font-semibold cursor-pointer hover:underline ${
           props.active && "dark:text-gray-200 font-semibold text-gray-900"
         }`}
       >

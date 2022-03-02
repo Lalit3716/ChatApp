@@ -3,4 +3,5 @@ export interface Chat {
   sender: string;
   receiver: string;
   createdAt: Date;
+  seen: boolean;
 }

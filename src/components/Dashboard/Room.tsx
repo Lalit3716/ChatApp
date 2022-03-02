@@ -17,7 +17,7 @@ const Room = () => {
   const { user, socket, token } = useContext(authContext);
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
-  const { friends, updateLastMessage } = useContext(friendsContext);
+  const { friends, updateLastMessage, markAsSeen } = useContext(friendsContext);
 
   useEffect(() => {
     if (friends) {
@@ -31,13 +31,32 @@ const Room = () => {
 
   useEffect(() => {
     if (!user || !socket) return;
-    const roomId = [user._id, friendId].sort().join("-");
 
-    socket!.emit("joinRoom", roomId);
+    socket!.emit("joinRoom", {
+      userId: user._id,
+      friendId: friendId,
+    });
+
+    markAsSeen(friendId!);
 
     socket!.on("message", chat => {
       setChats(prevChats => [chat, ...prevChats]);
     });
+
+    socket!.on("seenMessages", () => {
+      setChats(prevChats => {
+        const newChats = prevChats.map(c => {
+          c.seen = true;
+          return c;
+        });
+        return [...newChats];
+      });
+    });
+
+    return () => {
+      socket?.off("seenMessages");
+      socket?.off("message");
+    };
   }, [socket, friendId]);
 
   useEffect(() => {
@@ -65,6 +84,7 @@ const Room = () => {
       receiver: friendId!,
       message,
       createdAt: new Date(),
+      seen: false,
     };
 
     setMessage("");
@@ -97,6 +117,7 @@ const Room = () => {
               message={chat.message}
               isAuthor={chat.sender === user!._id}
               date={new Date(chat.createdAt)}
+              seen={chat.seen}
             />
           ))}
       </div>
