@@ -20,6 +20,7 @@ export interface ServerEvents {
   reject: (requestId: string) => void;
   message: (chat: Chat) => void;
   removeFriend: (id: string) => void;
+  "message-notify": (chat: Chat) => void;
   "user-offline": (userId: string) => void;
   "user-online": (userId: string) => void;
 }

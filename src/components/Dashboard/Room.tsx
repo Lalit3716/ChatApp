@@ -17,7 +17,7 @@ const Room = () => {
   const { user, socket, token } = useContext(authContext);
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
-  const { friends } = useContext(friendsContext);
+  const { friends, updateLastMessage } = useContext(friendsContext);
 
   useEffect(() => {
     if (friends) {
@@ -68,6 +68,8 @@ const Room = () => {
     };
 
     setMessage("");
+
+    updateLastMessage(friendId!, message);
 
     socket!.emit("message", chat);
   };

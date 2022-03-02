@@ -3,6 +3,7 @@ import authContext from "../../contexts/authContext";
 import { friendsContext } from "../../contexts/friendsContext";
 import useHttp from "../../hooks/useHttp";
 import { User } from "../../interfaces/auth";
+import { Chat } from "../../interfaces/chat";
 import { Request as RequestType } from "../../interfaces/request";
 import { Request } from "../../utils/request";
 
@@ -81,6 +82,19 @@ const FriendsProvider: FC = ({ children }) => {
     socket!.on("removeFriend", (userId: string) => {
       setFriends(prevFriends => prevFriends.filter(f => f._id !== userId));
     });
+
+    socket!.on("message-notify", (chat: Chat) => {
+      setFriends(prevFriends => {
+        const sender = prevFriends.find(f => f._id === chat.sender);
+
+        if (!sender) return prevFriends;
+
+        sender.lastMessage = chat.message;
+        sender.lastMessageCreatedAt = chat.createdAt;
+
+        return [...prevFriends];
+      });
+    });
   }, [socket, token]);
 
   const sendRequestTo = (toUser: User) => {
@@ -134,6 +148,19 @@ const FriendsProvider: FC = ({ children }) => {
     setFriends(prevFriends => prevFriends.filter(f => f._id !== friend._id));
   };
 
+  const updateLastMessage = (id: string, message: string) => {
+    setFriends(prevFriends => {
+      const friend = prevFriends.find(f => f._id === id);
+
+      if (!friend) return prevFriends;
+
+      friend.lastMessage = message;
+      friend.lastMessageCreatedAt = new Date();
+
+      return [...prevFriends];
+    });
+  };
+
   return (
     <friendsContext.Provider
       value={{
@@ -144,6 +171,7 @@ const FriendsProvider: FC = ({ children }) => {
         rejectRequest,
         cancelRequest,
         removeFriend,
+        updateLastMessage,
       }}
     >
       {children}
