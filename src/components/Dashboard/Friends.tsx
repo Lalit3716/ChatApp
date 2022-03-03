@@ -6,9 +6,11 @@ import SearchBar from "../Utils/InputBar";
 import useHttp from "../../hooks/useHttp";
 import { User } from "../../interfaces/auth";
 import authContext from "../../contexts/authContext";
+import useMediaQuery from "../../hooks/useMediaQuery";
 
 const Friends: FC = () => {
   const { isLoading, sendRequest, error } = useHttp();
+  const mq = useMediaQuery("(max-width: 768px)");
   const [active, setActive] = useState("all");
   const [search, setSearch] = useState("");
   const { friends, requests, sendRequestTo } = useContext(friendsContext);
@@ -40,13 +42,15 @@ const Friends: FC = () => {
 
   return (
     <div className="h-full p-4 flex-1 overflow-auto">
-      <div className="flex w-full justify-between items-center flex-col space-y-2 sm:flex-row">
+      <div className="flex w-full justify-between items-center sm:flex-row flex-col space-y-2">
         <div className="flex space-x-4 dark:text-gray-400 text-gray-500">
-          <Tab
-            label="All"
-            active={active === "all"}
-            onClick={() => setActive("all")}
-          />
+          <div className="ml-10">
+            <Tab
+              label="All"
+              active={active === "all"}
+              onClick={() => setActive("all")}
+            />
+          </div>
           <Tab
             label="Online"
             active={active === "online"}
@@ -67,7 +71,7 @@ const Friends: FC = () => {
         </div>
         {active === "requests" && (
           <>
-            <div className="flex items-center md:space-x-1 md:flex-row flex-col space-y-1 md:space-y-0">
+            <div className="flex items-center space-x-1 flex-row">
               <div>
                 <SearchBar
                   value={search}

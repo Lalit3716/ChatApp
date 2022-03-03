@@ -8,8 +8,10 @@ import ChatBox from "../Chats/ChatBox";
 import MessageBox from "../Utils/InputBar";
 import { User } from "../../interfaces/auth";
 import { Chat } from "../../interfaces/chat";
+import useMediaQuery from "../../hooks/useMediaQuery";
 
 const Room = () => {
+  const mq = useMediaQuery("(max-width: 768px)");
   const navigate = useNavigate();
   const { friendId } = useParams();
   const [friend, setFriend] = useState<User | undefined>();
@@ -100,7 +102,7 @@ const Room = () => {
         <img
           src={`https://avatars.dicebear.com/api/initials/${friend?.username}.svg`}
           alt="avatar"
-          className="w-10 h-10 rounded-full mr-4"
+          className={`w-10 h-10 rounded-full mr-4 ${mq && "ml-10"}`}
         />
         <div className="text-sm">
           <h1 className="text-gray-800 dark:text-gray-100 font-semibold">

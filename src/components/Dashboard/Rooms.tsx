@@ -1,17 +1,24 @@
 import { FC, useContext } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useLocation } from "react-router";
 import { useNavigate } from "react-router";
-import authContext from "../../contexts/authContext";
 import { friendsContext } from "../../contexts/friendsContext";
 
-const Rooms: FC = () => {
+interface Props {
+  absolute?: boolean;
+  onClose?: () => void;
+}
+
+const Rooms: FC<Props> = props => {
   const navigate = useNavigate();
-  const { user } = useContext(authContext);
   const { friends } = useContext(friendsContext);
   const { friendId } = useParams();
   const { pathname } = useLocation();
 
   const handleClick = (friendId?: string) => {
+    if (props.onClose) {
+      props.onClose();
+    }
     if (!friendId) {
       navigate("/friends");
     } else {
@@ -22,17 +29,29 @@ const Rooms: FC = () => {
   return (
     <nav
       aria-label="alternative nav"
-      className="h-full w-60 border-gray-400 border-r-2 dark:border-none"
+      className={`h-full w-60 border-gray-400 border-r-2 dark:border-none ${
+        props.absolute && "absolute z-20 top-0"
+      }`}
     >
       <div className="h-full overflow-auto dark:bg-slate-600 bg-gray-100">
-        <div
-          className={`dark:text-gray-100 text-gray-700 flex items-center p-4 hover:bg-gray-200 text-lg hover:dark:bg-gray-700 cursor-pointer ${
-            !friendId && pathname !== "/" && "bg-gray-200 dark:bg-gray-700"
-          }`}
-          onClick={() => handleClick()}
-        >
-          <i className="fa fa-solid fa-users mr-2" />
-          <h1>Friends</h1>
+        <div className="flex">
+          <div
+            className={`dark:text-gray-100 flex-1 text-gray-700 flex items-center p-4 hover:bg-gray-200 text-lg hover:dark:bg-gray-700 cursor-pointer ${
+              !friendId && pathname !== "/" && "bg-gray-200 dark:bg-gray-700"
+            }`}
+            onClick={() => handleClick()}
+          >
+            <i className="fa fa-solid fa-users mr-2" />
+            <h1>Friends</h1>
+          </div>
+          {props.onClose && (
+            <div
+              className="flex items-center justify-center p-2 text-xl cursor-pointer mr-2"
+              onClick={props.onClose}
+            >
+              <i className="fa fa-times text-gray-500 dark:text-gray-100" />
+            </div>
+          )}
         </div>
         {friends.length === 0 && (
           <div className="mt-10 text-2xl dark:text-gray-50">
