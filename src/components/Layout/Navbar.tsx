@@ -11,9 +11,7 @@ const Navbar: FC = () => {
       </div>
       <div className="flex items-center">
         <img
-          src={`https://avatars.dicebear.com/api/initials/${
-            user!.username
-          }.svg`}
+          src={`https://api.dicebear.com/7.x/initials/svg?seed=${user!.username}`}
           alt="avatar"
           className="w-10 h-10 rounded-full mr-4"
         />
